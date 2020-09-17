@@ -2,6 +2,7 @@ import discord
 import asyncio
 import logging
 import re
+from collections import defaultdict
 from typing import Any, Dict, Mapping, Optional
 
 from redbot.core import checks, commands, Config
@@ -287,20 +288,20 @@ Finally reload the cog with ``[p]reload githubcards`` and you're set to add in n
         if (matcher := await self.get_matcher_by_message(message)) is None:
             return
 
-        issue_numbers = set()
+        issue_numbers = defaultdict(set)
         issue_data_list = []
 
         for item in self.splitter.split(message.content):
             match = matcher["pattern"].match(item)
             if match is None:
                 continue
-            prefix = match.group(1)
+            prefix = match.group(1).lower()
             number = int(match.group(2))
             # no need to post card for same issue number in one message twice
-            if number in issue_numbers:
+            if number in issue_numbers[prefix]:
                 continue
-            issue_numbers.add(number)
-            prefix_data = matcher["data"][prefix.lower()]
+            issue_numbers[prefix].add(number)
+            prefix_data = matcher["data"][prefix]
             owner, repo = prefix_data['owner'], prefix_data['repo']
             try:
                 issue_data = await self.http.find_issue(owner, repo, number)
