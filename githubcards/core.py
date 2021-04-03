@@ -261,6 +261,11 @@ Finally reload the cog with ``[p]reload githubcards`` and you're set to add in n
             # No need to post card for same issue number from the same repo in one message twice
             if number in fetchable_repos[name_with_owner]['fetchable_issues']:
                 continue
+
+            # Do not fetch small numbers with empty prefix
+            if prefix == "" and number <= 10:
+                continue
+
             fetchable_repos[name_with_owner]['fetchable_issues'].add(number)
 
         if len(fetchable_repos) == 0:
