@@ -34,7 +34,7 @@ class Formatters:
             }
         
         body_text = issue['body']
-        body_text = re.sub(r'\s*<!--(.*?)-->', '', body_text)
+        body_text = re.sub(r'\s*<!--((.|\n)*?)-->', '', body_text)
 
         data = IssueData(
             name_with_owner=issue['repository']['nameWithOwner'],
