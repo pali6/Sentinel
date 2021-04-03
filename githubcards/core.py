@@ -249,6 +249,10 @@ Finally reload the cog with ``[p]reload githubcards`` and you're set to add in n
             prefix_data = matcher["data"][prefix]
             name_with_owner = (prefix_data['owner'], prefix_data['repo'])
 
+            # Do not fetch small numbers with empty prefix
+            if prefix == "" and number <= 10:
+                continue
+
             # Magical fetching aquesition done.
             # Ensure that the repo exists as a key
             if name_with_owner not in fetchable_repos:
@@ -260,10 +264,6 @@ Finally reload the cog with ``[p]reload githubcards`` and you're set to add in n
                 }
             # No need to post card for same issue number from the same repo in one message twice
             if number in fetchable_repos[name_with_owner]['fetchable_issues']:
-                continue
-
-            # Do not fetch small numbers with empty prefix
-            if prefix == "" and number <= 10:
                 continue
 
             fetchable_repos[name_with_owner]['fetchable_issues'].add(number)
