@@ -5,6 +5,7 @@
 """
 
 import discord
+import re
 from redbot.core.utils.chat_formatting import pagify
 
 from datetime import datetime
@@ -31,6 +32,9 @@ class Formatters:
                 "url": "https://github.com/ghost",
                 "avatarUrl": "https://avatars2.githubusercontent.com/u/10137?u=b1951d34a583cf12ec0d3b0781ba19be97726318&v=4"
             }
+        
+        body_text = issue['body']
+        body_text = re.sub(r'\s*<!--(.*?)-->', '', body_text)
 
         data = IssueData(
             name_with_owner=issue['repository']['nameWithOwner'],
@@ -40,7 +44,7 @@ class Formatters:
             issue_type=issue['__typename'],
             number=issue['number'],
             title=issue['title'],
-            body_text=issue['body'],
+            body_text=body_text,
             url=issue['url'],
             state=issue['state'],
             is_draft=is_draft,
