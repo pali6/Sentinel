@@ -35,6 +35,7 @@ class Formatters:
         
         body_text = issue['body']
         body_text = re.sub(r'\s*<!--((.|\n)*?)-->', '', body_text)
+        labels = tuple(label["name"] for label in issue["labels"]["nodes"])
 
         data = IssueData(
             name_with_owner=issue['repository']['nameWithOwner'],
@@ -50,6 +51,7 @@ class Formatters:
             is_draft=is_draft,
             mergeable_state=mergeable_state,
             milestone=milestone_title,
+            labels=labels,
             created_at=datetime.strptime(issue['createdAt'], '%Y-%m-%dT%H:%M:%SZ')
         )
         return data
@@ -77,8 +79,11 @@ class Formatters:
         embed.colour = getattr(IssueStateColour, issue_data.state)
         formatted_datetime = issue_data.created_at.strftime('%d %b %Y, %H:%M')
         embed.set_footer(text=f"{issue_data.name_with_owner} • Created on {formatted_datetime}")
-        # let's ignore this for now, since we want this to be compact, *fun*
-        # embed.add_field(name=f"Labels [{len(issue_data.labels)}]", value=", ".join(issue_data.labels))
+        if issue_data.labels:
+            embed.add_field(
+                name=f"Labels [{len(issue_data.labels)}]",
+                value=", ".join(issue_data.labels[:5]),
+            )
         if issue_data.mergeable_state is not None and issue_data.state == "OPEN":
             mergable_state = issue_data.mergeable_state.capitalize()
             if issue_data.is_draft is True:
